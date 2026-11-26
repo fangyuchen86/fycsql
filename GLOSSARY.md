@@ -82,4 +82,13 @@ _Avoid_: Free map, bitmap
 The narrow virtual filesystem seam wrapping all file I/O, directory sync, and single-process lock operations for OS portability and deterministic fault injection.
 _Avoid_: OS layer, disk driver
 
+**Checkpoint**:
+The four-step barriered process that copies committed **WAL** **Frames** up to the oldest active **Snapshot** back into the main database file and reclaims **WAL** space.
+_Avoid_: Flush, compaction
+
+**Group Commit**:
+The zero-delay batching of already-queued validated **Transactions** inside the **Commit Gate** into a single shared **WAL** sync operation.
+_Avoid_: Delayed commit, write batching
+
+
 

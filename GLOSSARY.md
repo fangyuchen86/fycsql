@@ -52,3 +52,34 @@ _Avoid_: Tuple ID, RID, record key
 A hidden, monotonically assigned 64-bit integer **Row Key** generated automatically for tables declared without an explicit primary key.
 _Avoid_: OID, surrogate key
 
+### Storage & Paging
+
+**Page**:
+A fixed-size block in the main database file addressed by a 1-based `PageID`, storing either the database file header, a B+Tree node, overflow payload, or a **Freelist** block.
+_Avoid_: Block, sector, raw node
+
+**WAL**:
+The append-only write-ahead log file (`<db>-wal`) holding committed **Page** images as sequential **Frames** for durability, crash recovery, and multi-version **Snapshot** reads.
+_Avoid_: Journal, redo log
+
+**Frame**:
+A single committed **Page** image paired with its **Commit Timestamp** and checksum, appended sequentially to the **WAL**.
+_Avoid_: Log record, WAL entry
+
+**Frame Index**:
+The in-memory index mapping each `PageID` to its committed **WAL** **Frames** ordered by **Commit Timestamp**, allowing any **Snapshot** to resolve the exact **Page** version visible to it.
+_Avoid_: Shm index, wal-index
+
+**Buffer Pool**:
+The bounded in-memory cache of immutable **Pages** and **Frames** backed by pointer-free byte slabs with pin-counted eviction.
+_Avoid_: Page cache, LRU cache
+
+**Freelist**:
+The transactional chain of trunk and leaf **Pages** tracking freed `PageID`s for reuse before extending the database file.
+_Avoid_: Free map, bitmap
+
+**VFS**:
+The narrow virtual filesystem seam wrapping all file I/O, directory sync, and single-process lock operations for OS portability and deterministic fault injection.
+_Avoid_: OS layer, disk driver
+
+

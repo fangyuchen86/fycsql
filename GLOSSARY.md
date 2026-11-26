@@ -106,6 +106,25 @@ _Avoid_: Packed page, record page
 A singly-linked **Page** holding trailing bytes of a row payload exceeding the inline cell limit, returned to the **Freelist** when replaced or deleted.
 _Avoid_: Spill page, blob page
 
+### Query Pipeline
+
+**Binder**:
+The semantic analysis stage that resolves identifiers against a **Snapshot**'s **Catalog** and enforces strict static typing before query planning.
+_Avoid_: Analyzer, typechecker
+
+**Physical Plan**:
+The executable tree of pull-based **Operators** produced by the planner, specifying concrete access paths, index bounds, and join or sort algorithms.
+_Avoid_: Query plan, AST
+
+**Operator**:
+A Volcano pull-iterator node executing one relational step over caller-owned reusable row buffers while respecting `context.Context` cancellation.
+_Avoid_: Executor node, pipeline stage
+
+**Statement Delta**:
+The isolated mutation buffer staged by a single DML statement and merged atomically into the transaction's **Write Set** upon statement success, preventing the Halloween Problem and partial writes on statement errors.
+_Avoid_: Sub-transaction, savepoint
+
+
 
 
 

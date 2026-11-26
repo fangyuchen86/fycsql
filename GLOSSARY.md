@@ -27,11 +27,11 @@ A First-Committer-Wins collision detected at the **Commit Gate** when a committi
 _Avoid_: Lock timeout, busy error
 
 **Commit Gate**:
-The serialized critical section that validates a **Write Set** for **Conflicts**, assigns the next **Commit Timestamp**, applies mutations durably, and publishes the new state to future **Snapshots**.
+The serialized critical section that validates a **Write Set** for **Conflicts**, assigns the next **Commit Timestamp**, applies mutations under the selected durability mode, and publishes the new state to future **Snapshots**.
 _Avoid_: Global write lock, big database lock
 
 **Schema Barrier**:
-An exclusive serialization boundary acquired at the **Commit Gate** by a **Transaction** containing DDL, ensuring catalog changes never interleave with concurrent writes while active **Snapshots** continue reading their prior catalog version.
+An exclusive serialization boundary acquired at the **Commit Gate** by a **Transaction** containing DDL, protecting the schema and source data used by that change while earlier **Snapshots** retain their original **Catalog**.
 _Avoid_: Metadata lock, table lock
 
 ### SQL & Schema
@@ -67,7 +67,7 @@ The append-only write-ahead log file (`<db>-wal`) holding committed **Page** ima
 _Avoid_: Journal, redo log
 
 **Frame**:
-A single committed **Page** image paired with its **Commit Timestamp** and checksum, appended sequentially to the **WAL**.
+A single **Page** image paired with its **Commit Timestamp** and checksum, appended sequentially to the **WAL**. Its visibility depends on a complete committed **Transaction**.
 _Avoid_: Log record, WAL entry
 
 **Frame Index**:
@@ -87,11 +87,11 @@ The narrow virtual filesystem seam wrapping all file I/O, directory sync, and si
 _Avoid_: OS layer, disk driver
 
 **Checkpoint**:
-The four-step barriered process that copies committed **WAL** **Frames** up to the oldest active **Snapshot** back into the main database file and reclaims **WAL** space.
+The four-step barriered process that copies committed **WAL** **Frames** up to the oldest active **Snapshot** back into the main database file and permits **WAL** reuse once its readers have drained.
 _Avoid_: Flush, compaction
 
 **Group Commit**:
-The zero-delay batching of already-queued validated **Transactions** inside the **Commit Gate** into a single shared **WAL** sync operation.
+A batch of already-queued **Transactions** processed in order at the **Commit Gate**. Its members share **WAL** writes and any required sync.
 _Avoid_: Delayed commit, write batching
 
 **Clustered Table**:
@@ -135,7 +135,7 @@ A stateful, single-goroutine handle over an open database holding at most one ac
 _Avoid_: Session, client
 
 **Fail-Stop**:
-The terminal, non-recoverable error state entered by an open database after any **VFS** `Sync()` failure, rejecting all subsequent mutations and preserving the **WAL** on close.
+The terminal, non-recoverable error state entered by an open database after a failed durability barrier or an uncertain **WAL** append, rejecting all subsequent mutations and preserving the **WAL** on close.
 _Avoid_: Read-only fallback, degraded mode
 
 

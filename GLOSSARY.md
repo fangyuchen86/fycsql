@@ -33,3 +33,22 @@ _Avoid_: Global write lock, big database lock
 **Schema Barrier**:
 An exclusive serialization boundary acquired at the **Commit Gate** by a **Transaction** containing DDL, ensuring catalog changes never interleave with concurrent writes while active **Snapshots** continue reading their prior catalog version.
 _Avoid_: Metadata lock, table lock
+
+### SQL & Schema
+
+**Catalog**:
+The transactional metadata describing all tables, columns, declared types, constraints, and indexes in the database.
+_Avoid_: Data dictionary, schema cache, sqlite_master
+
+**Value**:
+A typed scalar datum belonging to one of the five canonical types (`INTEGER`, `REAL`, `TEXT`, `BLOB`, `BOOLEAN`) or `NULL`.
+_Avoid_: Datum, cell, variant
+
+**Row Key**:
+The unique clustering key identifying a row within a table — either its declared primary key or an engine-assigned **Internal RowID**.
+_Avoid_: Tuple ID, RID, record key
+
+**Internal RowID**:
+A hidden, monotonically assigned 64-bit integer **Row Key** generated automatically for tables declared without an explicit primary key.
+_Avoid_: OID, surrogate key
+

@@ -52,6 +52,10 @@ _Avoid_: Tuple ID, RID, record key
 A hidden, monotonically assigned 64-bit integer **Row Key** generated automatically for tables declared without an explicit primary key.
 _Avoid_: OID, surrogate key
 
+**Physical Slot**:
+The permanently monotonic, never-reused ordinal assigned to each column in a table's **Catalog** entry, enabling instant metadata-only `ADD COLUMN` and tombstoned `DROP COLUMN` without rewriting stored rows.
+_Avoid_: Column index, field offset
+
 ### Storage & Paging
 
 **Page**:

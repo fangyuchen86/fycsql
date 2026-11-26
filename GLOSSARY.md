@@ -124,6 +124,16 @@ _Avoid_: Executor node, pipeline stage
 The isolated mutation buffer staged by a single DML statement and merged atomically into the transaction's **Write Set** upon statement success, preventing the Halloween Problem and partial writes on statement errors.
 _Avoid_: Sub-transaction, savepoint
 
+### Embedding & Lifecycle
+
+**Connection**:
+A stateful, single-goroutine handle over an open database holding at most one active **Transaction**, used by `database/sql/driver` and SQL-script callers executing `BEGIN`/`COMMIT`/`ROLLBACK`.
+_Avoid_: Session, client
+
+**Fail-Stop**:
+The terminal, non-recoverable error state entered by an open database after any **VFS** `Sync()` failure, rejecting all subsequent mutations and preserving the **WAL** on close.
+_Avoid_: Read-only fallback, degraded mode
+
 
 
 

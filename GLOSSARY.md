@@ -90,5 +90,22 @@ _Avoid_: Flush, compaction
 The zero-delay batching of already-queued validated **Transactions** inside the **Commit Gate** into a single shared **WAL** sync operation.
 _Avoid_: Delayed commit, write batching
 
+**Clustered Table**:
+The primary B+Tree storing a table's complete row records sorted directly by **Row Key**.
+_Avoid_: Heap, data file, table file
+
+**Secondary Index**:
+An auxiliary B+Tree storing order-preserving composite keys ending in **Row Key** to accelerate lookups or enforce uniqueness.
+_Avoid_: Non-clustered index, index file
+
+**Slotted Page**:
+A **Page** layout combining a sorted array of cell offsets growing downward from the header with variable-length cell payloads growing upward from the end.
+_Avoid_: Packed page, record page
+
+**Overflow Page**:
+A singly-linked **Page** holding trailing bytes of a row payload exceeding the inline cell limit, returned to the **Freelist** when replaced or deleted.
+_Avoid_: Spill page, blob page
+
+
 
 

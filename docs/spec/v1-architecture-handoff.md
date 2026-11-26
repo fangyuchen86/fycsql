@@ -9,6 +9,7 @@ Use this document together with `GLOSSARY.md` and `docs/adr/0001`–`0010` as th
 ## 1. Canonical Architectural Sources
 
 - **Domain Vocabulary**: [GLOSSARY.md](../../GLOSSARY.md)
+- **System Invariants (Acceptance Criteria Reference)**: [v1-invariants.md](./v1-invariants.md)
 - **Architecture Decision Records**:
   - [ADR-0001](../adr/0001-mvcc-occ-snapshot-isolation.md) — Multi-Writer MVCC + OCC, Snapshot Isolation, FIFO Commit Gate, Schema Barrier
   - [ADR-0002](../adr/0002-strict-typing-and-sql-dialect.md) — Strict Static Typing, SQL Dialect, 3VL, Binary Collation, 5-Point SQLite Oracle Normalization
